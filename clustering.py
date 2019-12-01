@@ -10,7 +10,7 @@ def read_data(path, read_as='list'):
 		data = pd.read_csv(path, delimiter=";")
 	else:
 		data = np.genfromtxt('Data/Dataset(Clustering).csv', 
-						     delimiter=';')
+			delimiter=';')
 		data = np.delete(data, 0, 0)
 
 	if read_as == 'list':
@@ -38,7 +38,7 @@ def avg_dist_to_centroid(clusters, centroids, input_data):
 			point = cluster[index]
 			centroid =  centroids[_cluster]
 			sum_of_distances += distance.euclidean(point, 
-												   centroid)
+				centroid)
 		avg_dist.append(sum_of_distances/points_cluster)
 		_cluster += 1
 	return avg_dist
@@ -67,7 +67,7 @@ if __name__ == '__main__':
 		centroids = cure_instance.get_means()
 		#Clusters average distance to centroids
 		avg_dist = avg_dist_to_centroid(clusters, 
-										centroids, input_data)
+			centroids, input_data)
 		k_d_plot[k] = avg_dist
 	print('K-Custers vs Avg. Distance to Centroid:\n\n', k_d_plot)
 
