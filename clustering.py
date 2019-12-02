@@ -1,33 +1,15 @@
 import numpy as np	
 import matplotlib.pyplot as plt
 from pyclustering.cluster.cure import cure
-from pyclustering.cluster import cluster_visualizer_multidim
 from scipy.spatial import distance
 
-def read_data(path, read_as='list'):
-	path = 'Data/Dataset(Clustering).csv'
-	if read_as == 'pandas_dataframe':
-		data = pd.read_csv(path, delimiter=";")
-	else:
-		data = np.genfromtxt('Data/Dataset(Clustering).csv', 
-			delimiter=';')
-		data = np.delete(data, 0, 0)
-
-	if read_as == 'list':
-		data = data.tolist()
-
+def read_data(path):
+	data = np.genfromtxt(path, delimiter=';')
+	data = np.delete(data, 0, 0)
+	data = data.tolist()
 	return data
 
-# Visualize clusters in multi-dimensional space
-def visualize_cluster(
-		clusters, input_data, 
-		pair_filter=[[0, 1], [0, 2]]
-		):
-	visualizer = cluster_visualizer_multidim() 
-	visualizer.append_clusters(clusters, input_data);
-	visualizer.show(pair_filter);
-
-# Calculates the average distance to centroid of each cluster
+# Calculates the average distance to centroid of all clusters
 def avg_dist_to_centroid(clusters, centroids, input_data):
 	avg_dist = []
 	_cluster = 0 
@@ -41,12 +23,13 @@ def avg_dist_to_centroid(clusters, centroids, input_data):
 				centroid)
 		avg_dist.append(sum_of_distances/points_cluster)
 		_cluster += 1
-	return avg_dist
+	return sum(avg_dist)/len(avg_dist)
 
 
 if __name__ == '__main__':
-	
+
 	k_d_plot = {}
+
 	for k in range(1,11):
 		input_data = read_data('Data/Dataset(Clustering).csv')
 		# Define parameters for the CURE algorithm 
@@ -56,10 +39,8 @@ if __name__ == '__main__':
 			compression=0.2, ccore=True);
 		# Run the algorithm	
 		cure_instance.process();
-		'''
 		# Get list of allocated clusters.
 		# Each cluster contains indexes of objects in list of data.
-		'''
 		clusters = cure_instance.get_clusters();
 		# Returns list of point-representors of each cluster
 		representatives_points = cure_instance.get_representors()
@@ -69,24 +50,11 @@ if __name__ == '__main__':
 		avg_dist = avg_dist_to_centroid(clusters, 
 			centroids, input_data)
 		k_d_plot[k] = avg_dist
-	print('K-Custers vs Avg. Distance to Centroid:\n\n', k_d_plot)
 
-
-
-
-	
-
-
-
-
-	
-
-	
-	
-
-
-	
-	
-	
-
-	
+	print('K-Clusters vs Avg. Distance to Centroid:\n', k_d_plot)
+	tmp = sorted(k_d_plot.items()) 
+	k, dist = zip(*tmp) 
+	plt.plot(k, dist)
+	plt.xlabel('K-Clusters')
+	plt.ylabel('Avg Distance to Centroid')
+	plt.show()
