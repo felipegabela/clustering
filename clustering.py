@@ -1,7 +1,9 @@
 import numpy as np	
 import matplotlib.pyplot as plt
 from pyclustering.cluster.cure import cure
+from pyclustering.cluster import cluster_visualizer_multidim
 from scipy.spatial import distance
+from sklearn.decomposition import PCA
 
 def read_data(path):
 	data = np.genfromtxt(path, delimiter=';')
@@ -17,7 +19,7 @@ def avg_dist_to_centroid(clusters, centroids, input_data):
 		sum_of_distances = 0
 		points_cluster = len(cluster)
 		for index in range(0, points_cluster):
-			point = cluster[index]
+			point = input_data[cluster[index]]
 			centroid =  centroids[_cluster]
 			sum_of_distances += distance.euclidean(point, 
 				centroid)
@@ -25,13 +27,20 @@ def avg_dist_to_centroid(clusters, centroids, input_data):
 		_cluster += 1
 	return sum(avg_dist)/len(avg_dist)
 
+# Visualize obtained clusters in multi-dimensional space
+def visualize_multidim():
+	visualizer = cluster_visualizer_multidim()
+	visualizer.append_clusters(clusters, sample_4d)
+	visualizer.show(max_row_size=3)
+
 
 if __name__ == '__main__':
 
+	input_data = read_data('Data/Dataset(Clustering).csv')
 	k_d_plot = {}
-
+	k_centroids = {}
+	k_clusters = {}
 	for k in range(1,11):
-		input_data = read_data('Data/Dataset(Clustering).csv')
 		# Define parameters for the CURE algorithm 
 		cure_instance = cure(
 			input_data, number_cluster=k, 
@@ -49,7 +58,13 @@ if __name__ == '__main__':
 		#Clusters average distance to centroids
 		avg_dist = avg_dist_to_centroid(clusters, 
 			centroids, input_data)
+		
+		#K-Clusters vs Avg Distance to Cluster
 		k_d_plot[k] = avg_dist
+		#Appending centroid value of each cluster for each different value of K
+		k_centroids[k] = centroids
+		#List of clusters with the indexes of objects for each K 
+		k_clusters [k] = clusters
 
 	print('K-Clusters vs Avg. Distance to Centroid:\n', k_d_plot)
 	tmp = sorted(k_d_plot.items()) 
@@ -58,3 +73,17 @@ if __name__ == '__main__':
 	plt.xlabel('K-Clusters')
 	plt.ylabel('Avg Distance to Centroid')
 	plt.show()
+
+	#Solucion Optima
+	optimal_k = 5
+	print('\nOptimal Solution K = ', optimal_k)
+		
+	#Centroid of each cluster
+	for i in range (0, len(k_centroids[optimal_k])):
+		print('\nCentroid Cluster ', 
+			i+1, ':\n', k_centroids[optimal_k][i])
+		
+	#Number of observations in each cluster
+	for i in range (0, len(k_clusters[optimal_k])):
+		print('Number of instances in Cluster ', 
+				i+1, ': ', len(k_clusters[optimal_k][i]))
