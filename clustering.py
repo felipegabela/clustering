@@ -37,6 +37,13 @@ def visualize_multidim():
 if __name__ == '__main__':
 
 	input_data = read_data('Data/Dataset(Clustering).csv')
+	#Delete Outliers
+	#outliers = [524, 512, 435, 432, 424, 387, 373, 285, 271, 213, 167, 147, 60, 47, 44, 40] #522, 213
+	#outliers =[524, 40, 522, 213] #Aaron
+	outliers = [524, 512, 435, 432, 424, 387, 373, 285, 271, 213, 167, 147, 60, 47, 44 ] #Adrian
+
+	input_data = np.delete(input_data, outliers, 0)
+
 	k_d_plot = {}
 	k_centroids = {}
 	k_clusters = {}
@@ -75,7 +82,7 @@ if __name__ == '__main__':
 	plt.show()
 
 	#Solucion Optima
-	optimal_k = 5
+	optimal_k = 2
 	print('\nOptimal Solution K = ', optimal_k)
 		
 	#Centroid of each cluster
@@ -86,4 +93,4 @@ if __name__ == '__main__':
 	#Number of observations in each cluster
 	for i in range (0, len(k_clusters[optimal_k])):
 		print('Number of instances in Cluster ', 
-				i+1, ': ', len(k_clusters[optimal_k][i]))
+				i+1, ': ', len(k_clusters[optimal_k][i]))		
